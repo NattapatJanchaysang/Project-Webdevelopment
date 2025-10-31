@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Temperature Log Form - IoT Dashboard</title>
+    <link
+    href="https://fonts.googleapis.com/css?family=Sofia&effect=fire"
+    rel="stylesheet"
+  />
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        .logs-container {
+            max-width: 1000px;
+            margin: 2rem auto;
+            padding: 2rem;
+        }
+        .logs-section {
+            background: white;
+            padding: 2rem;
+            border-radius: 15px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+        .back-btn {
+            background: linear-gradient(45deg, #FCB53B, #9b8662);
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 25px;
+            cursor: pointer;
+            margin-bottom: 2rem;
+            text-decoration: none;
+            display: inline-block;
+        }
+        .filter-section {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 2rem;
+            flex-wrap: wrap;
+        }
+        .filter-input {
+            padding: 8px 12px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            font-size: 0.9rem;
+        }
+        .filter-input:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+        .logs-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 1rem;
+        }
+        .logs-table th,
+        .logs-table td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #eee;
+        }
+        .logs-table th {
+            background: #f8f9fa;
+            font-weight: 600;
+            color: #333;
+        }
+        .logs-table tr:hover {
+            background: #f8f9fa;
+        }
+        .status-online {
+            color: #28a745;
+            font-weight: 600;
+        }
+        .status-offline {
+            color: #dc3545;
+            font-weight: 600;
+        }
+        .pagination {
+            display: flex;
+            justify-content: center;
+            gap: 0.5rem;
+            margin-top: 2rem;
+        }
+        .page-btn {
+            padding: 8px 12px;
+            border: 1px solid #ddd;
+            background: white;
+            cursor: pointer;
+            border-radius: 4px;
+        }
+        .page-btn:hover {
+            background: #f8f9fa;
+        }
+        .page-btn.active {
+            background: #667eea;
+            color: white;
+            border-color: #667eea;
+        }
+    </style>
+    </style>
+</head>
+<body>
+    <header class="nav-bar">
+        <ul class="nav-list">
+            <li style="font-size: xx-large;">Iot Website</li>
+          <li><a href="index.html">Home</a></li>
+          <li><a href="ViewConfig.html">View Config</a></li>
+          <li><a href="TLF.html" class="active">Temperature Log Form</a></li>
+          <li><a href="ViewLogs.html">View Logs</a></li>
+        </ul>
+      </header>
+    <div class="shooting-star"></div>
+<div class="shooting-star"></div>
+<div class="shooting-star"></div>
+<div class="shooting-star"></div>
+<div class="shooting-star"></div>
+    <div class="logs-container">
+        <a href="index.html" class="back-btn font">← Back to Dashboard</a>
+        
+        <h1 style="color: #ddd; font-size: 40px; font-weight: 900; font-family: 'Pacifico', cursive;">Temperature Log Form</h1>
+        
+        <div class="logs-section">
+
+            
+            <table class="logs-table">
+                <h2 class="button-container font">ข้อมูล Drone ปัจจุบัน</h2>
+                <div style="padding: 12px 0 18px 0; display: flex; align-items: center; gap: 12px;">
+                  <label for="temperatureInput" style="min-width:115px;font-size:1.07rem;font-weight:600;">อุณหภูมิ (°C)</label>
+                  <input type="number" id="temperatureInput" class="filter-input" placeholder="กรอกอุณหภูมิ..." step="0.1" style="max-width: 180px;">
+                </div>
+    
+                <tbody id="logsTableBody">
+
+
+                </tbody>
+            </table>
+            
+        </div>
+    </div>
+
+    
+</body>
+</html>
