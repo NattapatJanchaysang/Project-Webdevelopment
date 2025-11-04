@@ -140,14 +140,13 @@
     </div>
 <script>
     (async function(){ 
-       
+        
         let APP_DRONE_ID; 
 
       
         try {
             console.log('ViewLogs: Fetching app config...');
-          
-            const configRes = await fetch('/api/config'); 
+            const configRes = await fetch('/api/config');
             if (!configRes.ok) {
                 throw new Error('Failed to load app config');
             }
@@ -170,10 +169,9 @@
         let clientPage = 1;
         let currentDroneId = droneIdInput && droneIdInput.placeholder || APP_DRONE_ID;
         
-       
         const BACKEND_PERPAGE = 5; 
         const CLIENT_PAGE_SIZE = 5; 
-        const BACKEND_PAGES_PER_CLIENT = Math.ceil(CLIENT_PAGE_SIZE / BACKEND_PERPAGE); 
+        const BACKEND_PAGES_PER_CLIENT = Math.ceil(CLIENT_PAGE_SIZE / BACKEND_PERPAGE);
 
      
         function setStatus(text, isError){
@@ -188,7 +186,6 @@
             return d.toLocaleString();
         }
         async function fetchBackendPage(droneId, backendPage){
-            
             const url = `/logs/${encodeURIComponent(droneId)}?page=${backendPage}`; 
             const res = await fetch(url);
             if(!res.ok) throw new Error('Failed to fetch logs: ' + res.status);
@@ -217,7 +214,7 @@
                 throw err;
             }
             }
-  T-T-T     const trimmed = allItems.slice(0, CLIENT_PAGE_SIZE);
+            const trimmed = allItems.slice(0, CLIENT_PAGE_SIZE);
             const clientTotalPages = totalBackendItems ? Math.max(1, Math.ceil(totalBackendItems / CLIENT_PAGE_SIZE)) : 1;
             return { items: trimmed, clientTotalPages, totalBackendItems };
         }
@@ -260,7 +257,7 @@
             });
             paginationEl.appendChild(prev);
             const info = document.createElement('div');
-           info.style.padding = '8px 12px';
+            info.style.padding = '8px 12px';
             info.textContent = `Page ${current} of ${total}`;
             paginationEl.appendChild(info);
             const next = document.createElement('button');
@@ -287,8 +284,7 @@
             }
         }
 
-       
-
+      
       
         if(droneIdInput) droneIdInput.value = droneIdInput.placeholder || APP_DRONE_ID;
         currentDroneId = droneIdInput && (droneIdInput.value || droneIdInput.placeholder) || APP_DRONE_ID;
