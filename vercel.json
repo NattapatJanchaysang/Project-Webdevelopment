@@ -12,27 +12,27 @@
   ],
   "rewrites": [
     {
-      "src": "/api/config",
+      "source": "/api/config",
       "dest": "/Backend/server.js"
     },
     {
-      "src": "/configs/:droneId",
+      "source": "/configs/:droneId",
       "dest": "/Backend/server.js"
     },
     {
-      "src": "/logs",
+      "source": "/logs",
       "dest": "/Backend/server.js"
     },
     {
-      "src": "/logs/:droneId",
+      "source": "/logs/:droneId",
       "dest": "/Backend/server.js"
     },
     {
-      "src": "/status/:droneId",
+      "source": "/status/:droneId",
       "dest": "/Backend/server.js"
     },
     {
-      "src": "/(.*)",
+      "source": "/(.*)",
       "dest": "/Frontend/$1"
     }
   ]
