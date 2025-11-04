@@ -13,27 +13,27 @@
   "rewrites": [
     {
       "source": "/api/config",
-      "dest": "/Backend/server.js"
+      "destination": "/Backend/server.js"
     },
     {
       "source": "/configs/:droneId",
-      "dest": "/Backend/server.js"
+      "destination": "/Backend/server.js"
     },
     {
       "source": "/logs",
-      "dest": "/Backend/server.js"
+      "destination": "/Backend/server.js"
     },
     {
       "source": "/logs/:droneId",
-      "dest": "/Backend/server.js"
+      "destination": "/Backend/server.js"
     },
     {
       "source": "/status/:droneId",
-      "dest": "/Backend/server.js"
+      "destination": "/Backend/server.js"
     },
     {
       "source": "/(.*)",
-      "dest": "/Frontend/$1"
+      "destination": "/Frontend/$1"
     }
   ]
 }
