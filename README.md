@@ -4,7 +4,7 @@
 
 ## Live Demo
 
-**เว็บไซต์สาธิต:** (https://iot-webdev-sigma.vercel.app/index.html)
+**เว็บไซต์สาธิต:** https://iot-webdev-sigma.vercel.app/index.html
 
 
 ## โครงสร้างโปรเจกต์
