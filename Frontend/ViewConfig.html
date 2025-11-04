@@ -137,87 +137,86 @@
     </div>
 
 <script>
-      
-        const API_BASE = 'http://localhost:3000'
-        function showMessage(text, isError = true) {
-            const el = document.getElementById('message')
-            el.style.color = isError ? '#c00' : '#080'
-            el.textContent = text
-        }
+      
+    // ❌ const API_BASE = 'http://localhost:3000' // 👈 [แก้ไข] ลบบรรทัดนี้
 
-        function clearTable() {
-            document.getElementById('logsTableBody').innerHTML = ''
-        }
+        function showMessage(text, isError = true) {
+            const el = document.getElementById('message')
+            el.style.color = isError ? '#c00' : '#080'
+            el.textContent = text
+        }
 
-        function renderRow(item) {
-            const tbody = document.getElementById('logsTableBody')
-            const tr = document.createElement('tr')
+        function clearTable() {
+            document.getElementById('logsTableBody').innerHTML = ''
+        }
 
-            const idTd = document.createElement('td')
-            idTd.textContent = item.drone_id ?? item.id ?? ''
-            tr.appendChild(idTd)
+        function renderRow(item) {
+            const tbody = document.getElementById('logsTableBody')
+            const tr = document.createElement('tr')
 
-            const nameTd = document.createElement('td')
-            nameTd.textContent = item.drone_name ?? item.droneName ?? item.name ?? ''
-            tr.appendChild(nameTd)
+            const idTd = document.createElement('td')
+            idTd.textContent = item.drone_id ?? item.id ?? ''
+            tr.appendChild(idTd)
 
-            const lightTd = document.createElement('td')
-            lightTd.textContent = item.light ?? ''
-            tr.appendChild(lightTd)
+            const nameTd = document.createElement('td')
+            nameTd.textContent = item.drone_name ?? item.droneName ?? item.name ?? ''
+            tr.appendChild(nameTd)
 
-            const countryTd = document.createElement('td')
-            countryTd.textContent = item.country ?? ''
-            tr.appendChild(countryTd)
+            const lightTd = document.createElement('td')
+            lightTd.textContent = item.light ?? ''
+            tr.appendChild(lightTd)
 
-            tbody.appendChild(tr)
-        }
+            const countryTd = document.createElement('td')
+            countryTd.textContent = item.country ?? ''
+            tr.appendChild(countryTd)
 
-        async function fetchAndRender(droneId) {
-            if (!droneId) {
-                showMessage('กรุณากรอก drone ID')
-                return
-            }
-            showMessage('กำลังโหลด...', false) 
-            clearTable()
-            try {
-                const res = await fetch(`${API_BASE}/configs/${encodeURIComponent(droneId)}`)
-                if (!res.ok) {
-                    const err = await res.json().catch(()=>({ error: res.statusText }))
-                    throw new Error(err.error || err.message || 'Request failed')
-                }
-                const data = await res.json()
-                renderRow(data)
-                showMessage('', false)
-            } catch (e) {
-                showMessage(e.message || 'เกิดข้อผิดพลาด')
-            }
-        }
+            tbody.appendChild(tr)
+        }
+
+        async function fetchAndRender(droneId) {
+            if (!droneId) {
+                showMessage('กรุณากรอก drone ID')
+                return
+            }
+            showMessage('กำลังโหลด...', false) 
+            clearTable()
+            try {
+                // ⬇️ [แก้ไข] ⬇️
+                const res = await fetch(`/configs/${encodeURIComponent(droneId)}`) // 👈 ลบ API_BASE
+                if (!res.ok) {
+                    const err = await res.json().catch(()=>({ error: res.statusText }))
+                    throw new Error(err.error || err.message || 'Request failed')
+                }
+                const data = await res.json()
+                renderRow(data)
+                showMessage('', false)
+            } catch (e) {
+                showMessage(e.message || 'เกิดข้อผิดพลาด')
+            }
+        }
 
 
-        document.addEventListener('DOMContentLoaded', async () => {
-            let DRONE_ID_FROM_API; 
+        document.addEventListener('DOMContentLoaded', async () => {
+            let DRONE_ID_FROM_API; 
+            try {
+                showMessage('Loading config...', false); 
+                
+                // ⬇️ [แก้ไข] ⬇️
+                const configRes = await fetch('/api/config'); // 👈 ลบ API_BASE
+                if (!configRes.ok) {
+                    throw new Error('Failed to load app config from /api/config');
+                }
+                const appConfig = await configRes.json();
+                
+                DRONE_ID_FROM_API = appConfig.droneId; 
 
-            
-            try {
-              
-                showMessage('Loading config...', false); 
-                
-                const configRes = await fetch(`${API_BASE}/api/config`);
-                if (!configRes.ok) {
-                    throw new Error('Failed to load app config from /api/config');
-                }
-                const appConfig = await configRes.json();
-                
-                DRONE_ID_FROM_API = appConfig.droneId; 
-
-            } catch (e) {
-                showMessage(e.message); 
-                return; 
-            }
-
-            
-            fetchAndRender(DRONE_ID_FROM_API);
-        });
-    </script>
+            } catch (e) {
+                showMessage(e.message); 
+                return; 
+            }
+            
+            fetchAndRender(DRONE_ID_FROM_API);
+        });
+</script>
 </body>
 </html>

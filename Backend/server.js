@@ -169,7 +169,7 @@ app.get('/logs/:droneId', async (req, res) => {
   try {
     const droneId = req.params.droneId
     const page = req.query.page || 1
-    const perPage = 4
+    const perPage = 5
     
     console.log(`Fetching logs for drone ${droneId}, page ${page}`)
     

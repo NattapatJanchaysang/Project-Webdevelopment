@@ -1,0 +1,39 @@
+{
+  "version": 2,
+  "builds": [
+    {
+      "src": "Backend/server.js",
+      "use": "@vercel/node"
+    },
+    {
+      "src": "Frontend/**",
+      "use": "@vercel/static"
+    }
+  ],
+  "rewrites": [
+    {
+      "src": "/api/config",
+      "dest": "/Backend/server.js"
+    },
+    {
+      "src": "/configs/:droneId",
+      "dest": "/Backend/server.js"
+    },
+    {
+      "src": "/logs",
+      "dest": "/Backend/server.js"
+    },
+    {
+      "src": "/logs/:droneId",
+      "dest": "/Backend/server.js"
+    },
+    {
+      "src": "/status/:droneId",
+      "dest": "/Backend/server.js"
+    },
+    {
+      "src": "/(.*)",
+      "dest": "/Frontend/$1"
+    }
+  ]
+}
