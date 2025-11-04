@@ -12,17 +12,40 @@ app.use(cors())
 app.use(express.json())
 
 fetchDroneData = async () => {
-    const DRONE_API_URL = process.env.DRONE_API_URL
-    const response = await axios.get(`${DRONE_API_URL}`)
-    
-    if (response.data.status === 'ok' && response.data.data) {
-        return response.data.data
-    } else {
-        throw new Error('Invalid API response format')
-    }
+  const DRONE_API_URL = process.env.DRONE_API_URL
+
+  // 1. ตรวจสอบ URL
+  if (!DRONE_API_URL) {
+      throw new Error('Configuration Error: DRONE_API_URL is not set.')
+  }
+  
+  try {
+      // 2. เรียก API และจัดการ Network/HTTP Error
+      const response = await axios.get(DRONE_API_URL)
+      
+      // 3. ตรวจสอบโครงสร้างข้อมูลที่ส่งกลับมา
+      if (response.data.status === 'ok' && response.data.data) {
+          return response.data.data
+      } else {
+          // โยน Error กรณีที่ API ตอบกลับมา แต่ข้อมูลมีโครงสร้างไม่ถูกต้อง
+          throw new Error('Invalid API response format: status is not "ok" or data field is missing.')
+      }
+  } catch (error) {
+      // จัดการ Error ที่มาจาก axios (เช่น 4xx, 5xx หรือ Network Error)
+      console.error('External API Request Failed:', error.message)
+      // โยน Error ใหม่ที่มีความหมายชัดเจนขึ้นไปยัง Route Handler
+      throw new Error('Failed to retrieve drone data from external service.')
+  }
 }
 
 app.get('/', (req, res)=>res.send('Server is Live!'))
+
+app.get('/api/config', (req, res) => {
+    // ดึงค่าจาก .env มาส่งให้ Client
+    res.json({
+        droneId: process.env.DRONE_ID
+    });
+});
 
 app.get('/configs/:droneId', async (req, res) => {
    try {

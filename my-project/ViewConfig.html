@@ -105,10 +105,10 @@
         </ul>
       </header>
     <div class="shooting-star"></div>
-<div class="shooting-star"></div>
-<div class="shooting-star"></div>
-<div class="shooting-star"></div>
-<div class="shooting-star"></div>
+    <div class="shooting-star"></div>
+    <div class="shooting-star"></div>
+    <div class="shooting-star"></div>
+    <div class="shooting-star"></div>
     <div class="logs-container">
         <a href="index.html" class="back-btn font">← Back to Dashboard</a>
         <h1 style="color: #ddd; font-size: 40px; font-weight: 900; font-family: 'Pacifico', cursive;;" class="text-center">ข้อมูล Drone</h1>
@@ -126,15 +126,98 @@
                     </tr>
                 </thead>
                 <tbody id="logsTableBody">
-
-
                 </tbody>
             </table>
-            <button id="Button1">เรียกข้อมูล</button>
-            
+
+           
+            <div style="margin-top:1rem;">
+                <span id="message" style="margin-left:1rem;color:#c00;"></span>
+            </div>
         </div>
     </div>
 
-    
+<script>
+      
+        const API_BASE = 'http://localhost:3000'
+        function showMessage(text, isError = true) {
+            const el = document.getElementById('message')
+            el.style.color = isError ? '#c00' : '#080'
+            el.textContent = text
+        }
+
+        function clearTable() {
+            document.getElementById('logsTableBody').innerHTML = ''
+        }
+
+        function renderRow(item) {
+            const tbody = document.getElementById('logsTableBody')
+            const tr = document.createElement('tr')
+
+            const idTd = document.createElement('td')
+            idTd.textContent = item.drone_id ?? item.id ?? ''
+            tr.appendChild(idTd)
+
+            const nameTd = document.createElement('td')
+            nameTd.textContent = item.drone_name ?? item.droneName ?? item.name ?? ''
+            tr.appendChild(nameTd)
+
+            const lightTd = document.createElement('td')
+            lightTd.textContent = item.light ?? ''
+            tr.appendChild(lightTd)
+
+            const countryTd = document.createElement('td')
+            countryTd.textContent = item.country ?? ''
+            tr.appendChild(countryTd)
+
+            tbody.appendChild(tr)
+        }
+
+        async function fetchAndRender(droneId) {
+            if (!droneId) {
+                showMessage('กรุณากรอก drone ID')
+                return
+            }
+            showMessage('กำลังโหลด...', false) 
+            clearTable()
+            try {
+                const res = await fetch(`${API_BASE}/configs/${encodeURIComponent(droneId)}`)
+                if (!res.ok) {
+                    const err = await res.json().catch(()=>({ error: res.statusText }))
+                    throw new Error(err.error || err.message || 'Request failed')
+                }
+                const data = await res.json()
+                renderRow(data)
+                showMessage('', false)
+            } catch (e) {
+                showMessage(e.message || 'เกิดข้อผิดพลาด')
+            }
+        }
+
+
+        document.addEventListener('DOMContentLoaded', async () => {
+            let DRONE_ID_FROM_API; 
+
+            
+            try {
+              
+                showMessage('Loading config...', false); 
+                
+                const configRes = await fetch(`${API_BASE}/api/config`);
+                if (!configRes.ok) {
+                    throw new Error('Failed to load app config from /api/config');
+                }
+                const appConfig = await configRes.json();
+                
+                DRONE_ID_FROM_API = appConfig.droneId; 
+
+            } catch (e) {
+                showMessage(e.message); 
+                return; 
+            }
+
+            
+            fetchAndRender(DRONE_ID_FROM_API);
+        });
+    </script>
 </body>
 </html>

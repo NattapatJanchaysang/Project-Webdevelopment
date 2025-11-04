@@ -122,21 +122,32 @@
         <div class="logs-section">
 
             
+                        <table class="logs-table">
+                                <h2 class="button-container font">Fill in temperature information</h2>
+
+                                <!-- Only temperature input and submit button -->
+
+<div style="padding: 12px 0 18px 0;">
+                            
+                            <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 1.5rem;"> 
+                                <label for="temperatureInput" style="min-width:115px;font-size:1.07rem;font-weight:600;">อุณหภูมิ (°C)</label>
+                                <input type="number" id="temperatureInput" class="filter-input" placeholder="กรอกอุณหภูมิ..." step="0.1" style="max-width: 180px;">
+                            </div>
+
+                            <div style="display: flex; align-items: center; gap: 12px;">
+                                <button id="submitBtn" class="back-btn">Submit</button>
+                                <div id="submitStatus" style="padding:8px 12px; border-radius:8px; font-weight: 600;">&nbsp;</div>
+                            </div>
+
+                        </div>
             <table class="logs-table">
-                <h2 class="button-container font">ข้อมูล Drone ปัจจุบัน</h2>
-                <div style="padding: 12px 0 18px 0; display: flex; align-items: center; gap: 12px;">
-                  <label for="temperatureInput" style="min-width:115px;font-size:1.07rem;font-weight:600;">อุณหภูมิ (°C)</label>
-                  <input type="number" id="temperatureInput" class="filter-input" placeholder="กรอกอุณหภูมิ..." step="0.1" style="max-width: 180px;">
-                </div>
-    
                 <tbody id="logsTableBody">
-
-
                 </tbody>
             </table>
             
         </div>
     </div>
+    <script src="tlf.js"></script>
 
     
 </body>

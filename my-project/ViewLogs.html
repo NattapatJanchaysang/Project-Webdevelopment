@@ -113,20 +113,198 @@
   <div class="logs-container">
       <a href="index.html" class="back-btn font">← Back to Dashboard</a>
       
-      <h1 style="color: #ddd; font-size: 40px; font-weight: 900; font-family: 'Pacifico', cursive;">ViewLogs</h1>
+            <h1 style="color: #ddd; font-size: 40px; font-weight: 900; font-family: 'Pacifico', cursive;">ViewLogs</h1>
       
-      <div class="logs-section">
+            <div class="logs-section">
 
+
+                    <table class="logs-table">
+                        <thead>
+                            <tr>
+                                <th>Created</th>
+                                <th>Country</th>
+                                <th>Drone ID</th>
+                                <th>Drone Name</th>
+                                <th>Celsius</th>
+                            </tr>
+                        </thead>
+                        <tbody id="logsTableBody"></tbody>
+                    </table>
+                    </table>
+
+                    <div id="logsStatus" style="padding: 8px 0; color: #333;"></div>
+
+                    <div class="pagination" id="paginationControls" style="margin-top:16px"></div>
+            
+                </div>
+    </div>
+<script>
+    (async function(){ 
+        const API_BASE = 'http://localhost:3000';
+        let APP_DRONE_ID; 
+
+      
+        try {
+            console.log('ViewLogs: Fetching app config...');
+            const configRes = await fetch(`${API_BASE}/api/config`);
+            if (!configRes.ok) {
+                throw new Error('Failed to load app config');
+            }
+            const appConfig = await configRes.json();
+            APP_DRONE_ID = appConfig.droneId;
+            console.log('ViewLogs: Config loaded. DRONE_ID =', APP_DRONE_ID);
+        } catch (e) {
+            console.error(e);
+            document.body.innerHTML = '<h1>Error: Failed to load app configuration. Please check the server.</h1>';
+            return;
+        }
+
+      
+        const droneIdInput = document.getElementById('droneIdInput');
+        const loadBtn = document.getElementById('loadLogsBtn');
+        const statusEl = document.getElementById('logsStatus'); 
+        const tableBody = document.getElementById('logsTableBody');
+        const paginationEl = document.getElementById('paginationControls');
+
+        let clientPage = 1;
+        let currentDroneId = droneIdInput && droneIdInput.placeholder || APP_DRONE_ID;
+        
+        const BACKEND_PERPAGE = 4;
+        const CLIENT_PAGE_SIZE = 4;
+        const BACKEND_PAGES_PER_CLIENT = Math.ceil(CLIENT_PAGE_SIZE / BACKEND_PERPAGE);
+
+     
+        function setStatus(text, isError){
+            if(!statusEl) return;
+            statusEl.textContent = text || '';
+            statusEl.style.color = isError ? '#c00' : '#333';
+        }
+        function formatCreated(created){
+            if(!created) return '-';
+            const d = new Date(created);
+            if(isNaN(d)) return created;
+            return d.toLocaleString();
+        }
+        async function fetchBackendPage(droneId, backendPage){
+            const url = `${API_BASE}/logs/${encodeURIComponent(droneId)}?page=${backendPage}`;
+            const res = await fetch(url);
+            if(!res.ok) throw new Error('Failed to fetch logs: ' + res.status);
+            return res.json();
+        }
+        async function fetchClientPage(droneId, clientPage){
+            const backendStart = (clientPage - 1) * BACKEND_PAGES_PER_CLIENT + 1;
+            const backendEnd = clientPage * BACKEND_PAGES_PER_CLIENT;
+            let allItems = [];
+            let totalBackendPages = 0;
+            let totalBackendItems = 0; 
+            for(let p = backendStart; p <= backendEnd; p++){
+            try{
+                const body = await fetchBackendPage(droneId, p);
+                const items = body && body.data ? body.data : [];
+                const pagination = body && body.pagination ? body.pagination : null;
+                if(pagination) {
+                    if (pagination.totalPages) totalBackendPages = pagination.totalPages;
+                    if (pagination.totalItems) totalBackendItems = pagination.totalItems;
+                }
+                allItems = allItems.concat(items);
+                if(allItems.length >= CLIENT_PAGE_SIZE) break;
+                if(items.length < BACKEND_PERPAGE) break;
+            }catch(err){
+                console.error('Error fetching backend page', p, err);
+                throw err;
+            }
+            }
+            const trimmed = allItems.slice(0, CLIENT_PAGE_SIZE);
+            const clientTotalPages = totalBackendItems ? Math.max(1, Math.ceil(totalBackendItems / CLIENT_PAGE_SIZE)) : 1;
+            return { items: trimmed, clientTotalPages, totalBackendItems };
+        }
+        function renderTable(items){
+            if(!tableBody) return;
+            tableBody.innerHTML = '';
+            if(!items || items.length === 0){
+            const tr = document.createElement('tr');
+            const td = document.createElement('td');
+            td.colSpan = 5;
+            td.textContent = 'No logs';
+            tr.appendChild(td);
+            tableBody.appendChild(tr);
+            return;
+            }
+            items.forEach(it => {
+            const tr = document.createElement('tr');
+            const createdTd = document.createElement('td'); createdTd.textContent = formatCreated(it.created || it.createdAt || it.created_date || it.created_at);
+            const countryTd = document.createElement('td'); countryTd.textContent = it.country || '-';
+            const idTd = document.createElement('td'); idTd.textContent = it.drone_id || (it.drone && it.drone.id) || '-';
+            const nameTd = document.createElement('td'); nameTd.textContent = it.drone_name || it.drone_name || '-';
+            const celsiusTd = document.createElement('td'); celsiusTd.textContent = (it.celsius !== undefined && it.celsius !== null) ? it.celsius : '-';
+            tr.appendChild(createdTd);
+            tr.appendChild(countryTd);
+            tr.appendChild(idTd);
+            tr.appendChild(nameTd);
+            tr.appendChild(celsiusTd);
+            tableBody.appendChild(tr);
+            });
+        }
+        function renderPagination(current, total){
+            if(!paginationEl) return;
+            paginationEl.innerHTML = '';
+            const prev = document.createElement('button');
+            prev.className = 'page-btn';
+            prev.textContent = 'Prev';
+            prev.disabled = current <= 1;
+            prev.addEventListener('click', () => {
+            if(current > 1){ clientPage = current - 1; loadAndRender(currentDroneId, clientPage); }
+            });
+            paginationEl.appendChild(prev);
+            const info = document.createElement('div');
+            info.style.padding = '8px 12px';
+            info.textContent = `Page ${current} of ${total}`;
+            paginationEl.appendChild(info);
+            const next = document.createElement('button');
+            next.className = 'page-btn';
+            next.textContent = 'Next';
+            next.disabled = current >= total;
+            next.addEventListener('click', () => {
+            if(current < total){ clientPage = current + 1; loadAndRender(currentDroneId, clientPage); }
+            });
+            paginationEl.appendChild(next);
+        }
+        async function loadAndRender(droneId, page){
+            setStatus('Loading...');
+try{
+                const { items, clientTotalPages, totalBackendItems } = await fetchClientPage(droneId, page);
+                renderTable(items);
+                renderPagination(page, clientTotalPages);
+
+                
+
+
+                setStatus(''); 
+
+            }catch(err){
+                console.error(err);
+                setStatus('Failed to load logs', true);
+                renderTable([]);
+                renderPagination(1,1);
+            }
+        }
+
+
+      
+        if(droneIdInput) droneIdInput.value = droneIdInput.placeholder || APP_DRONE_ID;
+        currentDroneId = droneIdInput && (droneIdInput.value || droneIdInput.placeholder) || APP_DRONE_ID;
+        
+        
+        loadAndRender(currentDroneId, clientPage);
+
+    })(); 
+</script>
+
+
+
+                    <div class="pagination" id="paginationControls" style="margin-top:16px"></div>
           
-          <table class="logs-table">
-
-              <tbody id="logsTableBody">
-
-
-              </tbody>
-          </table>
-          
-      </div>
+            </div>
   </div>
 
   
